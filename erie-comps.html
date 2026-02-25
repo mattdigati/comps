@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erie County Comps Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #112240;
+    --navy3: #1a3260;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f5f0e8;
+    --cream2: #ede8dc;
+    --red: #c0392b;
+    --green: #1e7d45;
+    --text: #1a1a2e;
+    --muted: #6b7a99;
+    --border: #d4cfc3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: #fff;
+    letter-spacing: 2px;
+  }
+
+  .logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .header-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    border: 1px solid var(--gold);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 32px;
+  }
+
+  /* STEP CARDS */
+  .step-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .step-card.active {
+    box-shadow: 0 4px 24px rgba(10,22,40,0.12);
+    border-color: var(--navy3);
+  }
+
+  .step-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--gold);
+    line-height: 1;
+    min-width: 30px;
+  }
+
+  .step-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .step-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .step-body {
+    padding: 28px;
+  }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 4px;
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--cream);
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--gold);
+    background: #fff;
+  }
+
+  .upload-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+
+  .upload-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .upload-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .upload-success {
+    background: #f0faf4;
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* COLUMN MAPPER */
+  .mapper-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .mapper-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mapper-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 110px;
+  }
+
+  .mapper-label span {
+    color: var(--red);
+  }
+
+  select, input[type="text"], input[type="number"] {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 8px 12px;
+    background: #fff;
+    color: var(--text);
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+
+  select:focus, input:focus {
+    outline: none;
+    border-color: var(--navy3);
+  }
+
+  /* SUBJECT FORM */
+  .subject-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .field-group label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .field-group label span { color: var(--red); }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .filter-bar .field-group {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  /* BUTTON */
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    padding: 14px 36px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--navy);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--navy3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(10,22,40,0.3);
+  }
+
+  .btn-gold {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .btn-gold:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-sm {
+    font-size: 13px;
+    padding: 8px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* RESULTS */
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .results-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: var(--navy);
+  }
+
+  /* SUBJECT SUMMARY */
+  .subject-summary {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 4px;
+    padding: 20px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .subj-address {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .subj-stat {
+    text-align: center;
+  }
+
+  .subj-stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--gold);
+    display: block;
+  }
+
+  .subj-stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .stat-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .stat-box-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--navy);
+    display: block;
+  }
+
+  .stat-box-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead {
+    background: var(--navy2);
+    color: #fff;
+  }
+
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 16px;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  th:hover { background: var(--navy3); }
+  th .sort-arrow { margin-left: 4px; opacity: 0.5; }
+  th.sorted .sort-arrow { opacity: 1; color: var(--gold); }
+
+  tbody tr {
+    border-bottom: 1px solid var(--cream2);
+    transition: background 0.1s;
+  }
+
+  tbody tr:hover { background: var(--cream); }
+  tbody tr:last-child { border-bottom: none; }
+
+  td {
+    padding: 11px 16px;
+    white-space: nowrap;
+  }
+
+  td.address-cell { white-space: normal; min-width: 180px; }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-green { background: #d4edda; color: var(--green); }
+  .badge-red { background: #fde8e7; color: var(--red); }
+  .badge-muted { background: var(--cream2); color: var(--muted); }
+
+  .diff-positive { color: var(--green); font-weight: 600; }
+  .diff-negative { color: var(--red); font-weight: 600; }
+
+  /* PRINT */
+  .print-header {
+    display: none;
+  }
+
+  @media print {
+    header, .step-card, .btn, .filter-bar { display: none !important; }
+    .print-header {
+      display: block;
+      margin-bottom: 24px;
+    }
+    .print-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+    .print-header p {
+      font-size: 12px;
+      color: #666;
+      font-family: 'DM Mono', monospace;
+    }
+    body { background: #fff; }
+  }
+
+  /* MISC */
+  .info-box {
+    background: #eef3ff;
+    border-left: 3px solid var(--navy3);
+    padding: 12px 16px;
+    border-radius: 0 3px 3px 0;
+    font-size: 13px;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .info-box a { color: var(--navy3); font-weight: 600; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  .hidden { display: none !important; }
+
+  .tag-row {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    background: var(--cream2);
+    border-radius: 2px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  .notice {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    padding: 40px 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-text">Erie Comps</span>
+    <span class="logo-sub">Erie County, NY · Real Estate Analysis</span>
+  </div>
+  <span class="header-badge">NYS ORPTS DATA</span>
+</header>
+
+<div class="container">
+
+  <!-- STEP 1: Upload -->
+  <div class="step-card active" id="card-upload">
+    <div class="step-header">
+      <span class="step-num">01</span>
+      <div>
+        <div class="step-title">Load Sales Data</div>
+        <div class="step-desc">Upload your Erie County sales export (CSV or TSV)</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="info-box">
+        📥 <strong>Where to get data:</strong> Go to <a href="https://www.tax.ny.gov/pit/property/munidataportal.htm" target="_blank">tax.ny.gov → Municipal Data Portal → Sales Web</a> → Select Erie County → Choose municipality & date range → Export/Download CSV. Refresh monthly for fresh comps.
+      </div>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📂</div>
+        <div class="upload-text">Drop your CSV file here, or click to browse</div>
+        <div class="upload-hint">Accepts .csv, .tsv, or .txt exports from NYS SalesWeb</div>
+        <input type="file" id="file-input" accept=".csv,.tsv,.txt" style="display:none">
+      </div>
+
+      <div id="upload-status" class="hidden" style="margin-top:16px; font-family:'DM Mono',monospace; font-size:12px; color:var(--green)"></div>
+
+      <!-- Column Mapper (shown after upload) -->
+      <div id="col-mapper" class="hidden">
+        <hr class="divider">
+        <div style="margin-bottom:16px;">
+          <div style="font-weight:600; font-size:14px; margin-bottom:4px;">Map Your Columns</div>
+          <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted);">Tell us which columns contain each data field. We've auto-detected where possible.</div>
+        </div>
+        <div class="mapper-grid" id="mapper-grid"></div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-primary" onclick="confirmMapping()">Confirm Mapping →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 2: Subject Property -->
+  <div class="step-card" id="card-subject">
+    <div class="step-header">
+      <span class="step-num">02</span>
+      <div>
+        <div class="step-title">Subject Property</div>
+        <div class="step-desc">Enter the property you're evaluating</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="subject-grid">
+        <div class="field-group" style="grid-column: span 2">
+          <label>Street Address <span>*</span></label>
+          <input type="text" id="subj-address" placeholder="e.g. 123 Elmwood Ave" />
+        </div>
+        <div class="field-group">
+          <label>City / Town <span>*</span></label>
+          <input type="text" id="subj-city" placeholder="e.g. Buffalo" />
+        </div>
+        <div class="field-group">
+          <label>Property Type</label>
+          <select id="subj-type">
+            <option value="">Any</option>
+            <option value="210">210 - Single Family</option>
+            <option value="215">215 - 2 Family</option>
+            <option value="220">220 - 3 Family</option>
+            <option value="230">230 - Apartments</option>
+            <option value="240">240 - Rural Res</option>
+            <option value="250">250 - Comm/Res</option>
+            <option value="270">270 - Mobile Home</option>
+            <option value="280">280 - Seasonal</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Sq Ft (if known)</label>
+          <input type="number" id="subj-sqft" placeholder="e.g. 1450" />
+        </div>
+        <div class="field-group">
+          <label>Bedrooms</label>
+          <input type="number" id="subj-beds" placeholder="e.g. 3" />
+        </div>
+        <div class="field-group">
+          <label>Bathrooms</label>
+          <input type="number" id="subj-baths" placeholder="e.g. 1.5" step="0.5" />
+        </div>
+        <div class="field-group">
+          <label>List / Asking Price</label>
+          <input type="number" id="subj-price" placeholder="e.g. 225000" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Filters -->
+  <div class="step-card" id="card-filters">
+    <div class="step-header">
+      <span class="step-num">03</span>
+      <div>
+        <div class="step-title">Comp Filters</div>
+        <div class="step-desc">Narrow the comparable sales search</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="filter-bar">
+        <div class="field-group">
+          <label>Months Back</label>
+          <select id="filter-months">
+            <option value="6">Last 6 months</option>
+            <option value="12" selected>Last 12 months</option>
+            <option value="18">Last 18 months</option>
+            <option value="24">Last 24 months</option>
+            <option value="0">All dates</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Same City/Town Only</label>
+          <select id="filter-city">
+            <option value="1">Yes – same city/town</option>
+            <option value="0">No – entire county</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Max Comps to Show</label>
+          <select id="filter-count">
+            <option value="5">5 comps</option>
+            <option value="10" selected>10 comps</option>
+            <option value="20">20 comps</option>
+            <option value="999">All matching</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Min Sale Price ($)</label>
+          <input type="number" id="filter-min" placeholder="e.g. 50000" />
+        </div>
+        <div class="field-group">
+          <label>Max Sale Price ($)</label>
+          <input type="number" id="filter-max" placeholder="e.g. 500000" />
+        </div>
+      </div>
+      <div style="margin-top:24px; display:flex; gap:12px;">
+        <button class="btn btn-primary" onclick="runComps()" style="font-size:20px; padding:16px 48px;">Generate Comps Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-section" class="hidden">
+
+    <div class="print-header">
+      <h1>Comparable Sales Report — Erie County, NY</h1>
+      <p id="print-meta"></p>
+    </div>
+
+    <div class="results-header">
+      <span class="results-title">Comparable Sales Report</span>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-sm btn-gold" onclick="window.print()">🖨 Print / Save PDF</button>
+        <button class="btn btn-sm btn-primary" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Subject summary bar -->
+    <div class="subject-summary" id="subject-summary"></div>
+
+    <!-- Stats row -->
+    <div class="stats-row" id="stats-row"></div>
+
+    <!-- Tags -->
+    <div class="tag-row" id="tag-row"></div>
+
+    <!-- Comps table -->
+    <div class="table-wrap">
+      <table id="comps-table">
+        <thead>
+          <tr id="table-head"></tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:12px; font-family:'DM Mono',monospace; font-size:10px; color:var(--muted);">
+      Source: NYS Office of Real Property Tax Services (ORPTS) SalesWeb · Arms-length sales only · Generated <span id="gen-date"></span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────
+let rawRows = [];
+let headers = [];
+let colMap = {};
+let sortCol = null;
+let sortDir = 1;
+
+// Fields we need to map
+const FIELDS = [
+  { key: 'street',    label: 'Street Address', required: true,  aliases: ['street','address','property location','prop loc','full street','street name','street number','straddr','st name','property address'] },
+  { key: 'city',      label: 'City / Town',    required: true,  aliases: ['city','town','municipality','muni','city or town','city/town'] },
+  { key: 'sale_price',label: 'Sale Price',      required: true,  aliases: ['sale price','price','full sale price','amount','sale amt','sales price','transfer price'] },
+  { key: 'sale_date', label: 'Sale Date',       required: false, aliases: ['sale date','date of sale','transfer date','recorded date','deed date','date'] },
+  { key: 'prop_class',label: 'Property Class',  required: false, aliases: ['property class','prop class','class code','class','propclass','use code'] },
+  { key: 'sqft',      label: 'Square Feet',     required: false, aliases: ['sq ft','sqft','square feet','gross sq ft','living area','floor area','building sq ft','land sqft','gla'] },
+  { key: 'beds',      label: 'Bedrooms',        required: false, aliases: ['bedrooms','beds','bedroom','br'] },
+  { key: 'baths',     label: 'Bathrooms',       required: false, aliases: ['bathrooms','baths','bath','full bath','total bath'] },
+];
+
+// ─── UPLOAD ───────────────────────────────────────────────
+const zone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+
+zone.addEventListener('click', () => fileInput.click());
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+function handleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => parseCSV(e.target.result, file.name);
+  reader.readAsText(file);
+}
+
+function parseCSV(text, name) {
+  // detect delimiter
+  const firstLine = text.split('\n')[0];
+  const delimiter = firstLine.includes('\t') ? '\t' : ',';
+  
+  const lines = text.trim().split('\n').filter(l => l.trim());
+  if (lines.length < 2) { alert('File appears empty or too small.'); return; }
+
+  headers = parseRow(lines[0], delimiter);
+  rawRows = lines.slice(1).map(l => {
+    const vals = parseRow(l, delimiter);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (vals[i] || '').trim());
+    return obj;
+  }).filter(r => Object.values(r).some(v => v));
+
+  document.getElementById('upload-status').textContent = `✓ Loaded ${rawRows.length.toLocaleString()} rows from "${name}"`;
+  document.getElementById('upload-status').classList.remove('hidden');
+  zone.classList.add('upload-success');
+  zone.innerHTML = `<div class="upload-icon">✅</div><div class="upload-text">${name}</div><div class="upload-hint">${rawRows.length.toLocaleString()} sales records loaded</div>`;
+
+  buildMapper();
+}
+
+function parseRow(line, delim) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQ = !inQ; continue; }
+    if (ch === delim && !inQ) { result.push(cur); cur = ''; continue; }
+    cur += ch;
+  }
+  result.push(cur);
+  return result;
+}
+
+// ─── COLUMN MAPPER ────────────────────────────────────────
+function autoDetect(field) {
+  const aliases = field.aliases;
+  for (const h of headers) {
+    const hn = h.toLowerCase().trim();
+    if (aliases.some(a => hn === a || hn.includes(a) || a.includes(hn))) return h;
+  }
+  return '';
+}
+
+function buildMapper() {
+  const grid = document.getElementById('mapper-grid');
+  grid.innerHTML = '';
+  FIELDS.forEach(f => {
+    const detected = autoDetect(f);
+    const row = document.createElement('div');
+    row.className = 'mapper-row';
+    row.innerHTML = `
+      <div class="mapper-label">${f.label}${f.required ? ' <span>*</span>' : ''}</div>
+      <select id="map-${f.key}">
+        <option value="">-- not in file --</option>
+        ${headers.map(h => `<option value="${h}" ${h === detected ? 'selected' : ''}>${h}</option>`).join('')}
+      </select>`;
+    grid.appendChild(row);
+  });
+  document.getElementById('col-mapper').classList.remove('hidden');
+}
+
+function confirmMapping() {
+  colMap = {};
+  let missing = [];
+  FIELDS.forEach(f => {
+    const val = document.getElementById(`map-${f.key}`).value;
+    colMap[f.key] = val || null;
+    if (f.required && !val) missing.push(f.label);
+  });
+  if (missing.length) { alert(`Please map required fields: ${missing.join(', ')}`); return; }
+  document.getElementById('card-subject').classList.add('active');
+  document.getElementById('card-filters').classList.add('active');
+  document.getElementById('card-upload').classList.remove('active');
+  document.getElementById('col-mapper').classList.add('hidden');
+  document.getElementById('upload-status').textContent += ' · Columns mapped ✓';
+}
+
+// ─── COMPS ENGINE ─────────────────────────────────────────
+function getVal(row, key) {
+  const col = colMap[key];
+  return col ? (row[col] || '') : '';
+}
+
+function parsePrice(v) {
+  return parseFloat(v.toString().replace(/[$,\s]/g, '')) || 0;
+}
+
+function parseDate(v) {
+  if (!v) return null;
+  // try various formats
+  const d = new Date(v);
+  if (!isNaN(d)) return d;
+  // MM/DD/YYYY
+  const m = v.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (m) return new Date(`${m[3]}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`);
+  return null;
+}
+
+function normalizeCity(s) {
+  return s.toLowerCase().replace(/\btown of\b|\bcity of\b|\bvillage of\b/gi, '').trim();
+}
+
+function runComps() {
+  const subjAddr = document.getElementById('subj-address').value.trim();
+  const subjCity = document.getElementById('subj-city').value.trim();
+  const subjType = document.getElementById('subj-type').value;
+  const subjSqft = parseFloat(document.getElementById('subj-sqft').value) || 0;
+  const subjBeds = parseFloat(document.getElementById('subj-beds').value) || 0;
+  const subjBaths = parseFloat(document.getElementById('subj-baths').value) || 0;
+  const subjPrice = parseFloat(document.getElementById('subj-price').value) || 0;
+
+  if (!subjAddr || !subjCity) { alert('Please enter a subject property address and city/town.'); return; }
+
+  const months = parseInt(document.getElementById('filter-months').value);
+  const sameCity = document.getElementById('filter-city').value === '1';
+  const maxCount = parseInt(document.getElementById('filter-count').value);
+  const minPrice = parseFloat(document.getElementById('filter-min').value) || 0;
+  const maxPrice = parseFloat(document.getElementById('filter-max').value) || Infinity;
+
+  const cutoff = months > 0 ? new Date(Date.now() - months * 30.5 * 24 * 3600 * 1000) : null;
+  const subjCityNorm = normalizeCity(subjCity);
+
+  let comps = rawRows.filter(row => {
+    const price = parsePrice(getVal(row, 'sale_price'));
+    if (price <= 0) return false;
+    if (price < minPrice || price > maxPrice) return false;
+
+    if (cutoff) {
+      const d = parseDate(getVal(row, 'sale_date'));
+      if (d && d < cutoff) return false;
+    }
+
+    if (sameCity) {
+      const city = normalizeCity(getVal(row, 'city'));
+      if (!city.includes(subjCityNorm) && !subjCityNorm.includes(city)) return false;
+    }
+
+    if (subjType) {
+      const pc = getVal(row, 'prop_class').toString().trim();
+      if (pc && !pc.startsWith(subjType.substring(0, 2))) return false;
+    }
+
+    return true;
+  });
+
+  // Sort by closest sale date (most recent first)
+  comps.sort((a, b) => {
+    const da = parseDate(getVal(a, 'sale_date'));
+    const db = parseDate(getVal(b, 'sale_date'));
+    if (da && db) return db - da;
+    return 0;
+  });
+
+  comps = comps.slice(0, maxCount);
+
+  if (comps.length === 0) {
+    alert('No comparable sales found. Try relaxing your filters (longer date range, entire county, etc.).');
+    return;
+  }
+
+  renderResults(comps, { subjAddr, subjCity, subjType, subjSqft, subjBeds, subjBaths, subjPrice });
+}
+
+// ─── RENDER ───────────────────────────────────────────────
+function renderResults(comps, subj) {
+  document.getElementById('results-section').classList.remove('hidden');
+  document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  document.getElementById('gen-date').textContent = new Date().toLocaleDateString();
+  document.getElementById('print-meta').textContent = `Subject: ${subj.subjAddr}, ${subj.subjCity} · Generated ${new Date().toLocaleDateString()}`;
+
+  // Prices
+  const prices = comps.map(r => parsePrice(getVal(r, 'sale_price'))).filter(p => p > 0);
+  const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+  const medPrice = median(prices);
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
+
+  // Sq ft / PPSF
+  const sqfts = comps.map(r => parseFloat(getVal(r, 'sqft'))).filter(v => v > 0);
+  const ppsfArr = comps.filter(r => {
+    const p = parsePrice(getVal(r, 'sale_price'));
+    const s = parseFloat(getVal(r, 'sqft'));
+    return p > 0 && s > 0;
+  }).map(r => parsePrice(getVal(r, 'sale_price')) / parseFloat(getVal(r, 'sqft')));
+
+  const avgPpsf = ppsfArr.length ? ppsfArr.reduce((a, b) => a + b, 0) / ppsfArr.length : 0;
+  const subjPpsf = subj.subjSqft > 0 && subj.subjPrice > 0 ? subj.subjPrice / subj.subjSqft : 0;
+
+  // Subject summary bar
+  document.getElementById('subject-summary').innerHTML = `
+    <div class="subj-address">${subj.subjAddr}<br><span style="font-size:13px;font-family:'DM Mono',monospace;color:var(--muted);font-weight:300">${subj.subjCity}, Erie County NY</span></div>
+    ${subj.subjPrice > 0 ? `<div class="subj-stat"><span class="subj-stat-val">${fmt$(subj.subjPrice)}</span><span class="subj-stat-label">List Price</span></div>` : ''}
+    ${subj.subjSqft > 0 ? `<div class="subj-stat"><span class="subj-stat-val">${subj.subjSqft.toLocaleString()}</span><span class="subj-stat-label">Sq Ft</span></div>` : ''}
+    ${subjPpsf > 0 ? `<div class="subj-stat"><span class="subj-stat-val">${fmt$(subjPpsf)}</span><span class="subj-stat-label">$/Sq Ft</span></div>` : ''}
+    ${subj.subjBeds > 0 ? `<div class="subj-stat"><span class="subj-stat-val">${subj.subjBeds}</span><span class="subj-stat-label">Beds</span></div>` : ''}
+    ${subj.subjBaths > 0 ? `<div class="subj-stat"><span class="subj-stat-val">${subj.subjBaths}</span><span class="subj-stat-label">Baths</span></div>` : ''}
+  `;
+
+  // Stats boxes
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-box"><span class="stat-box-val">${comps.length}</span><span class="stat-box-label">Comps Found</span></div>
+    <div class="stat-box"><span class="stat-box-val">${fmt$(medPrice)}</span><span class="stat-box-label">Median Sale Price</span></div>
+    <div class="stat-box"><span class="stat-box-val">${fmt$(avgPrice)}</span><span class="stat-box-label">Avg Sale Price</span></div>
+    <div class="stat-box"><span class="stat-box-val">${fmt$(minP)} – ${fmt$(maxP)}</span><span class="stat-box-label">Price Range</span></div>
+    ${avgPpsf > 0 ? `<div class="stat-box"><span class="stat-box-val">${fmt$(avgPpsf)}</span><span class="stat-box-label">Avg $/Sq Ft</span></div>` : ''}
+    ${subj.subjPrice > 0 ? `<div class="stat-box" style="border-color:${subj.subjPrice <= medPrice ? 'var(--green)' : 'var(--red)'}">
+      <span class="stat-box-val" style="color:${subj.subjPrice <= medPrice ? 'var(--green)' : 'var(--red)'}">
+        ${subj.subjPrice <= medPrice ? '▼ Below' : '▲ Above'} Median
+      </span>
+      <span class="stat-box-label">${fmt$(Math.abs(subj.subjPrice - medPrice))} difference</span>
+    </div>` : ''}
+  `;
+
+  // Tags
+  const hasDate = colMap.sale_date;
+  const hasSqft = colMap.sqft;
+  const hasBeds = colMap.beds;
+  const hasBaths = colMap.baths;
+  document.getElementById('tag-row').innerHTML = [
+    hasDate && '<span class="tag">Sale Date ✓</span>',
+    hasSqft && '<span class="tag">Square Feet ✓</span>',
+    hasBeds && '<span class="tag">Bedrooms ✓</span>',
+    hasBaths && '<span class="tag">Bathrooms ✓</span>',
+    colMap.prop_class && '<span class="tag">Property Class ✓</span>',
+  ].filter(Boolean).join('');
+
+  // Table columns
+  const cols = [
+    { key: 'idx',        label: '#',          fn: (r, i) => i + 1 },
+    { key: 'address',    label: 'Address',    fn: r => `<td class="address-cell">${getVal(r,'street')}</td>`, raw: r => getVal(r,'street') },
+    { key: 'city',       label: 'City/Town',  fn: r => `<td>${getVal(r,'city')}</td>`, raw: r => getVal(r,'city') },
+    { key: 'sale_date',  label: 'Sale Date',  fn: r => `<td>${fmtDate(getVal(r,'sale_date'))}</td>`, raw: r => getVal(r,'sale_date'), skip: !colMap.sale_date },
+    { key: 'prop_class', label: 'Class',      fn: r => `<td><span class="badge badge-muted">${getVal(r,'prop_class')}</span></td>`, raw: r => getVal(r,'prop_class'), skip: !colMap.prop_class },
+    { key: 'sale_price', label: 'Sale Price', fn: r => { const p=parsePrice(getVal(r,'sale_price')); const diff=subj.subjPrice>0?((p-subj.subjPrice)/subj.subjPrice*100).toFixed(1):null; return `<td>${fmt$(p)}${diff!==null?` <small class="${diff<0?'diff-negative':'diff-positive'}">${diff>0?'+':''}${diff}%</small>`:''}</td>`; }, raw: r => parsePrice(getVal(r,'sale_price')) },
+    { key: 'sqft',       label: 'Sq Ft',      fn: r => { const s=parseFloat(getVal(r,'sqft')); return `<td>${s>0?s.toLocaleString():'-'}</td>`; }, raw: r => parseFloat(getVal(r,'sqft'))||0, skip: !colMap.sqft },
+    { key: 'ppsf',       label: '$/Sq Ft',    fn: r => { const p=parsePrice(getVal(r,'sale_price')); const s=parseFloat(getVal(r,'sqft')); if(!p||!s)return '<td>-</td>'; const ppsf=(p/s); const diff=subjPpsf>0?((ppsf-subjPpsf)/subjPpsf*100).toFixed(1):null; return `<td>${fmt$(ppsf)}${diff!==null?` <small class="${diff<0?'diff-negative':'diff-positive'}">${diff>0?'+':''}${diff}%</small>`:''}</td>`; }, raw: r => { const p=parsePrice(getVal(r,'sale_price')); const s=parseFloat(getVal(r,'sqft')); return (p&&s)?p/s:0; }, skip: !colMap.sqft },
+    { key: 'beds',       label: 'Beds',       fn: r => `<td>${getVal(r,'beds')||'-'}</td>`, raw: r => getVal(r,'beds'), skip: !colMap.beds },
+    { key: 'baths',      label: 'Baths',      fn: r => `<td>${getVal(r,'baths')||'-'}</td>`, raw: r => getVal(r,'baths'), skip: !colMap.baths },
+  ].filter(c => !c.skip);
+
+  // Header
+  const thead = document.getElementById('table-head');
+  thead.innerHTML = cols.map(c => `<th onclick="sortTable('${c.key}')" class="${sortCol===c.key?'sorted':''}">${c.label} <span class="sort-arrow">${sortCol===c.key?(sortDir>0?'▲':'▼'):'⇅'}</span></th>`).join('');
+
+  // Rows
+  renderTableRows(comps, cols);
+
+  // store for re-sort
+  window._comps = comps;
+  window._cols = cols;
+  window._subj = subj;
+}
+
+function renderTableRows(comps, cols) {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = comps.map((r, i) => {
+    return `<tr>${cols.map(c => {
+      if (c.key === 'idx') return `<td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">${i+1}</td>`;
+      return c.fn(r, i);
+    }).join('')}</tr>`;
+  }).join('');
+}
+
+function sortTable(key) {
+  if (sortCol === key) sortDir *= -1;
+  else { sortCol = key; sortDir = -1; }
+  const col = window._cols.find(c => c.key === key);
+  if (!col || !col.raw) return;
+  window._comps.sort((a, b) => {
+    const av = col.raw(a), bv = col.raw(b);
+    if (typeof av === 'number') return (av - bv) * sortDir;
+    return String(av).localeCompare(String(bv)) * sortDir;
+  });
+  renderTableRows(window._comps, window._cols);
+  // update header
+  document.getElementById('table-head').innerHTML = window._cols.map(c =>
+    `<th onclick="sortTable('${c.key}')" class="${sortCol===c.key?'sorted':''}">${c.label} <span class="sort-arrow">${sortCol===c.key?(sortDir>0?'▲':'▼'):'⇅'}</span></th>`
+  ).join('');
+}
+
+// ─── EXPORT CSV ───────────────────────────────────────────
+function exportCSV() {
+  if (!window._comps) return;
+  const cols = window._cols.filter(c => c.key !== 'idx');
+  const header = ['#', ...cols.map(c => c.label)].join(',');
+  const rows = window._comps.map((r, i) => {
+    return [i+1, ...cols.map(c => {
+      const v = c.raw ? c.raw(r) : '';
+      return `"${String(v).replace(/"/g,'""')}"`;
+    })].join(',');
+  });
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ErieComps_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function fmt$(n) {
+  if (!n || isNaN(n)) return '-';
+  return '$' + Math.round(n).toLocaleString();
+}
+
+function fmtDate(v) {
+  const d = parseDate(v);
+  if (!d) return v || '-';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function median(arr) {
+  if (!arr.length) return 0;
+  const s = [...arr].sort((a,b) => a-b);
+  const m = Math.floor(s.length/2);
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2;
+}
+</script>
+</body>
+</html>
